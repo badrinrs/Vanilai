@@ -31,7 +31,6 @@
         android:src="@drawable/degree"
         android:contentDescription="@string/degree_img_content_description"
         android:layout_alignTop="@+id/temperatureLabel"
-        android:layout_toRightOf="@+id/temperatureLabel"
         android:layout_toEndOf="@+id/temperatureLabel"
         android:layout_marginTop="50dp"/>
 
@@ -61,7 +60,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/iconImageView"
         android:layout_alignBottom="@+id/locationLabel"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:src="@drawable/cloudy_night"
         android:contentDescription="@string/icon_description"/>
@@ -143,7 +141,8 @@
         android:id="@+id/refreshImageView"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/refresh"/>
+        android:src="@drawable/refresh"
+        android:contentDescription="@string/refresh_content_description"/>
 
     <ProgressBar
         android:layout_width="wrap_content"
@@ -151,4 +150,86 @@
         android:id="@+id/progressBar"
         android:layout_centerHorizontal="true"
         android:layout_alignBottom="@+id/refreshImageView"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/default_earthquake_summary"
+        android:id="@+id/earthquakeSummaryLabel"
+        android:layout_below="@+id/summaryLabel"
+        android:layout_centerHorizontal="true"
+        android:textSize="18sp"
+        android:textColor="@android:color/white"
+        android:textIsSelectable="false"/>
+
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/temperature_switch_text"
+        android:id="@+id/temperatureSwitch"
+        android:layout_alignBottom="@+id/temperatureLabel"
+        android:layout_centerHorizontal="true"
+        android:textSize="18sp"
+        android:textColor="@android:color/white"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/earthquakeSummaryLabel"
+        android:layout_centerHorizontal="true"
+        android:weightSum="100"
+        android:layout_alignParentBottom="true"
+        android:baselineAligned="false">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="70">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/magnitude_text"
+                android:id="@+id/magnitudeLabel"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textAlignment="center"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/magnitudeValue"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="30">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/default_place_text"
+                android:id="@+id/placeLabel"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"
+                android:textAlignment="center"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/placeValue"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"
+                android:textAlignment="center"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
 </RelativeLayout>

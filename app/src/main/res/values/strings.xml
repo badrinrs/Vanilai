@@ -26,4 +26,13 @@
     <string name="current_humidity">%1$.2f</string>
     <string name="error_location">Please switch on GPS to use app.</string>
     <string name="error_location_title">GPS Error!</string>
+    <string name="fahrenheit_label">°F</string>
+    <string name="celsius_label">°C</string>
+    <string name="refresh_content_description">Refresh Image</string>
+    <string name="default_earthquake_summary">Getting Earthquake Information...</string>
+    <string name="temperature_switch_text">Temperature Switch</string>
+    <string name="magnitude_text">Magnitude</string>
+    <string name="default_place_text">Place</string>
+    <string name="current_earthquake_magnitude">%1$s</string>
+    <string name="default_earthquake_text">Found 0 Earthquakes in Area in the last 2hrs!</string>
 </resources>
