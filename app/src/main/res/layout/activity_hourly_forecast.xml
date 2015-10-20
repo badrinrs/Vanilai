@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".MainActivity">
+    tools:context="me.madri.vanilai.ui.HourlyForecastActivity">
 
-    <include layout="@layout/content_main"/>
+    <include layout="@layout/content_hourly_forecast"/>
 
 </android.support.design.widget.CoordinatorLayout>

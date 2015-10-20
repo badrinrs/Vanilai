@@ -1,7 +1,8 @@
-package me.madri.vanilai;
+package me.madri.vanilai.ui;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -45,6 +46,13 @@ import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import me.madri.vanilai.R;
+import me.madri.vanilai.earthquake.CurrentEarthquake;
+import me.madri.vanilai.location.VanilaiLocationService;
+import me.madri.vanilai.weather.CurrentVanilai;
+import me.madri.vanilai.weather.DailyVanilai;
+import me.madri.vanilai.weather.HourlyVanilai;
+import me.madri.vanilai.weather.Vanilai;
 
 import static me.madri.vanilai.R.string.current_humidity;
 import static me.madri.vanilai.R.string.current_precipitation;
@@ -55,7 +63,10 @@ import static me.madri.vanilai.R.string.fahrenheit_label;
 public class MainActivity extends AppCompatActivity implements LocationListener {
 
     public static final String TAG = MainActivity.class.getSimpleName();
-    private CurrentVanilai mCurrentVanilai;
+    public static final String DAILY_FORECAST = "DAILY_FORECAST";
+    public static final String HOURLY_FORECAST = "HOURLY_FORECAST";
+
+    private Vanilai mVanilai;
     private double mLatitude;
     private double mLongitude;
     private Geocoder mGeoCoder;
@@ -63,8 +74,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private VanilaiLocationService mVanilaiLocationService;
     private Location mLocation;
     private CurrentEarthquake mCurrentEarthquake;
-    private int mOnSuccessToggle = 0;
-    private int mOnFailureToggle = 0;
+    private int mOnSuccessToggle;
+    private int mOnFailureToggle;
 
     @Bind(R.id.timeLabel)
     TextView mTimeLabel;
@@ -147,8 +158,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     private void getForecast(final double latitude, final double longitude) {
-        mOnSuccessToggle=0;
-        mOnFailureToggle=0;
+        //mOnSuccessToggle=0;
+        //mOnFailureToggle=0;
         if(isNetworkAvailable()) {
             toggleRefresh();
             final OkHttpClient client = new OkHttpClient();
@@ -157,6 +168,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 public void run() {
                     String apiKey = "e5aa93a28a1be7d23a7482e2b8d5c60a";
                     String forecastUrl = "https://api.forecast.io/forecast/"+apiKey+"/"+latitude+","+longitude;
+                    Log.v(TAG, "Forecast Url: "+forecastUrl);
                     Request request = new Request.Builder()
                             .url(forecastUrl)
                             .build();
@@ -185,9 +197,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                 String jsonData = response.body().string();
                                 Log.v(TAG, jsonData);
                                 if (response.isSuccessful()) {
-                                    mCurrentVanilai = getCurrentDetails(jsonData,
-                                            getCityFromLocation(latitude, longitude,
-                                                    mGeoCoder));
+                                    mVanilai = parseVanilaiDetails(jsonData);
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
@@ -200,66 +210,66 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                             } catch (IOException | JSONException e) {
                                 Log.e(TAG, "Forecast Exception caught: " + e);
                             }
-                        }
-                    });
-                }
-            });
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-                    Date curDate = new Date();
-                    Calendar cal = Calendar.getInstance();
-                    cal.setTime(curDate);
-                    cal.add(Calendar.DAY_OF_YEAR, -1);
-                    Date priorDate= cal.getTime();
-                    String earthquakeUrl = "http://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&" +
-                            "starttime="+dateFormat.format(priorDate)+"&endtime="+dateFormat.format(curDate)
-                            +"&latitude="+latitude+"&longitude="+longitude+
-                            "&maxradius=25&callback&eventtype=earthquake&minmagnitude=3";
-                    Log.v(TAG, "Earthquake Url: " + earthquakeUrl);
-                    Request earthquakeRequest = new Request.Builder()
-                            .url(earthquakeUrl)
-                            .build();
-                    Call earthquakeCall = client.newCall(earthquakeRequest);
-                    earthquakeCall.enqueue(new Callback() {
-                        @Override
-                        public void onFailure(Request request, IOException e) {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    mOnFailureToggle++;
-                                }
-                            });
-                            alertUserAboutError();
-                        }
-
-                        @Override
-                        public void onResponse(Response response) throws IOException {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mOnSuccessToggle++;
-                                }
-                            });
-                            try {
-                                Log.v(TAG, "Getting earthquake data");
-                                String jsonEarthquakeData = response.body().string();
-                                Log.v(TAG, jsonEarthquakeData);
-                                if (response.isSuccessful()) {
-                                    mCurrentEarthquake = getEarthquakeDetails(jsonEarthquakeData);
-                                    runOnUiThread(new Runnable() {
+                                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+                                    Date curDate = new Date();
+                                    Calendar cal = Calendar.getInstance();
+                                    cal.setTime(curDate);
+                                    cal.add(Calendar.DAY_OF_YEAR, -1);
+                                    Date priorDate= cal.getTime();
+                                    String earthquakeUrl = "http://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&" +
+                                            "starttime="+dateFormat.format(priorDate)+"&endtime="+dateFormat.format(curDate)
+                                            +"&latitude="+latitude+"&longitude="+longitude+
+                                            "&maxradius=25&callback&eventtype=earthquake&minmagnitude=3";
+                                    Log.v(TAG, "Earthquake Url: " + earthquakeUrl);
+                                    Request earthquakeRequest = new Request.Builder()
+                                            .url(earthquakeUrl)
+                                            .build();
+                                    Call earthquakeCall = client.newCall(earthquakeRequest);
+                                    earthquakeCall.enqueue(new Callback() {
                                         @Override
-                                        public void run() {
-                                            updateEarthquakeDisplay();
+                                        public void onFailure(Request request, IOException e) {
+                                            runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    mOnFailureToggle++;
+                                                }
+                                            });
+                                            alertUserAboutError();
+                                        }
+
+                                        @Override
+                                        public void onResponse(Response response) throws IOException {
+                                            runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    mOnSuccessToggle++;
+                                                }
+                                            });
+                                            try {
+                                                Log.v(TAG, "Getting earthquake data");
+                                                String jsonEarthquakeData = response.body().string();
+                                                Log.v(TAG, jsonEarthquakeData);
+                                                if (response.isSuccessful()) {
+                                                    mCurrentEarthquake = getEarthquakeDetails(jsonEarthquakeData);
+                                                    runOnUiThread(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            updateEarthquakeDisplay();
+                                                        }
+                                                    });
+                                                } else {
+                                                    alertUserAboutError();
+                                                }
+                                            } catch (IOException | JSONException e) {
+                                                Log.e(TAG, "Earthquake Exception caught: " + e);
+                                            }
                                         }
                                     });
-                                } else {
-                                    alertUserAboutError();
                                 }
-                            } catch (IOException | JSONException e) {
-                                Log.e(TAG, "Earthquake Exception caught: " + e);
-                            }
+                            });
                         }
                     });
                 }
@@ -328,7 +338,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 mCurrentEarthquake.setAlertType(alert);
             }
         }
-        mCurrentEarthquake.setSummary("Found "+count+" Earthquakes in Area!");
+        mCurrentEarthquake.setSummary("Found " + count + " Earthquakes in Area!");
         return mCurrentEarthquake;
     }
 
@@ -344,16 +354,64 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     private void updateDisplay() {
         Resources res = getResources();
-        mTemperatureLabel.setText(res.getString(current_temperature, mCurrentVanilai.getTemperature()));
-        mTimeLabel.setText(res.getString(current_time_label, mCurrentVanilai.getFormattedTime()));
-        mHumidityValue.setText(res.getString(current_humidity, mCurrentVanilai.getHumidity()));
-        mPrecipValue.setText(res.getString(current_precipitation, mCurrentVanilai.getPrecipChance()));
-        mSummaryLabel.setText(mCurrentVanilai.getSummary());
-        mLocationLabel.setText(mCurrentVanilai.getCity());
-        Drawable drawable = ContextCompat.getDrawable(this, mCurrentVanilai.getIconId());
+        CurrentVanilai currentVanilai = mVanilai.getCurrentVanilai();
+        mTemperatureLabel.setText(res.getString(current_temperature, currentVanilai.getTemperature()));
+        mTimeLabel.setText(res.getString(current_time_label, currentVanilai.getFormattedTime()));
+        mHumidityValue.setText(res.getString(current_humidity, currentVanilai.getHumidity()));
+        mPrecipValue.setText(res.getString(current_precipitation, currentVanilai.getPrecipChance()));
+        mSummaryLabel.setText(currentVanilai.getSummary());
+        mLocationLabel.setText(currentVanilai.getCity());
+        Drawable drawable = ContextCompat.getDrawable(this, currentVanilai.getIconId());
         mIconImageView.setImageDrawable(drawable);
         mTemperatureSwitch.setChecked(false);
         mTemperatureSwitch.setText(res.getString(fahrenheit_label));
+    }
+
+    private Vanilai parseVanilaiDetails(String jsonData) throws JSONException {
+        Vanilai vanilai = new Vanilai();
+        String city = getCityFromLocation(mLatitude, mLongitude, mGeoCoder);
+        Vanilai.setCity(city);
+        vanilai.setCurrentVanilai(getCurrentDetails(jsonData, getCityFromLocation(mLatitude, mLongitude,
+                mGeoCoder)));
+        vanilai.setDailyVanilai(getDailyForecast(jsonData));
+        vanilai.setHourlyVanilai(getHourlyForecast(jsonData));
+        return vanilai;
+    }
+
+    private HourlyVanilai[] getHourlyForecast(String jsonData) throws JSONException {
+        JSONObject forecast = new JSONObject(jsonData);
+        String timezone = forecast.getString("timezone");
+        JSONObject hourly = forecast.getJSONObject("hourly");
+        JSONArray hourlyData = hourly.getJSONArray("data");
+        HourlyVanilai[] hourlyVanilais = new HourlyVanilai[hourlyData.length()];
+        for (int i=0;i<hourlyData.length();i++) {
+            JSONObject hourData = hourlyData.getJSONObject(i);
+            hourlyVanilais[i] = new HourlyVanilai();
+            hourlyVanilais[i].setTime(hourData.getLong("time"));
+            hourlyVanilais[i].setSummary(hourData.getString("summary"));
+            hourlyVanilais[i].setIcon(hourData.getString("icon"));
+            hourlyVanilais[i].setTemperature(hourData.getDouble("temperature"));
+            hourlyVanilais[i].setTimezone(timezone);
+        }
+        return hourlyVanilais;
+    }
+
+    private DailyVanilai[] getDailyForecast(String jsonData) throws JSONException {
+        JSONObject forecast = new JSONObject(jsonData);
+        String timezone = forecast.getString("timezone");
+        JSONObject daily = forecast.getJSONObject("daily");
+        JSONArray dailyData = daily.getJSONArray("data");
+        DailyVanilai[] dailyVanilais = new DailyVanilai[dailyData.length()];
+        for (int i=0;i<dailyData.length();i++) {
+            JSONObject dayData = dailyData.getJSONObject(i);
+            dailyVanilais[i] = new DailyVanilai();
+            dailyVanilais[i].setTime(dayData.getLong("time"));
+            dailyVanilais[i].setSummary(dayData.getString("summary"));
+            dailyVanilais[i].setIcon(dayData.getString("icon"));
+            dailyVanilais[i].setMaxTemperature(dayData.getDouble("temperatureMax"));
+            dailyVanilais[i].setTimezone(timezone);
+        }
+        return dailyVanilais;
     }
 
     private CurrentVanilai getCurrentDetails(String jsonData, String city) throws JSONException {
@@ -420,6 +478,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     public void setOnTemperatureSwitch() {
+        CurrentVanilai currentVanilai = mVanilai.getCurrentVanilai();
         Resources resources = getResources();
         Log.v(TAG, mTemperatureSwitch.getText().toString());
         if(mTemperatureSwitch.getText().toString().equalsIgnoreCase("°F")) {
@@ -427,21 +486,21 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             String temperatureText = mTemperatureLabel.getText().toString();
             double currentTemperature = Double.parseDouble(temperatureText);
             double newTemperature = ((currentTemperature - 32) * 5)/9;
-            mCurrentVanilai.setTemperature(newTemperature);
+            currentVanilai.setTemperature(newTemperature);
             mTemperatureLabel.setText(resources.getString(R.string.current_temperature,
-                    mCurrentVanilai.getTemperature()));
+                    currentVanilai.getTemperature()));
             mTemperatureSwitch.setText("°C");
-            Log.v(TAG, "Current temp: "+mCurrentVanilai.getTemperature()+"°C");
+            Log.v(TAG, "Current temp: "+currentVanilai.getTemperature()+"°C");
         } else if(mTemperatureSwitch.getText().toString().equalsIgnoreCase("°C")) {
             mTemperatureSwitch.setChecked(false);
             String temperatureText = mTemperatureLabel.getText().toString();
             double currentTemperature = Double.parseDouble(temperatureText);
             double newTemperature = ((currentTemperature * 9) / 5) + 32;
-            mCurrentVanilai.setTemperature(newTemperature);
+            currentVanilai.setTemperature(newTemperature);
             mTemperatureLabel.setText(resources.getString(R.string.current_temperature,
-                    mCurrentVanilai.getTemperature()));
+                    currentVanilai.getTemperature()));
             mTemperatureSwitch.setText("°F");
-            Log.v(TAG, "Current temp: " + mCurrentVanilai.getTemperature() + "°F");
+            Log.v(TAG, "Current temp: " + currentVanilai.getTemperature() + "°F");
         }
     }
 
@@ -464,5 +523,17 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     @Override
     public void onProviderDisabled(String provider) {
 
+    }
+
+    public void onClickDailyButton(View view) {
+        Intent intent = new Intent(this, DailyForecastActivity.class);
+        intent.putExtra(DAILY_FORECAST, mVanilai.getDailyVanilai());
+        startActivity(intent);
+    }
+
+    public void onClickHourlyButton(View View) {
+        Intent intent = new Intent(this, HourlyForecastActivity.class);
+        intent.putExtra(HOURLY_FORECAST, mVanilai.getHourlyVanilai());
+        startActivity(intent);
     }
 }

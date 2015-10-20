@@ -1,11 +1,11 @@
-package me.madri.vanilai;
+package me.madri.vanilai.weather;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
 /**
- * Created by bnara on 10/4/2015.
+ * This is a bean class for Current Vanilai(Weather)
  */
 public class CurrentVanilai {
     private String mIcon;
@@ -48,29 +48,7 @@ public class CurrentVanilai {
     }
 
     public int getIconId() {
-        int iconId = R.drawable.clear_day;
-        if(mIcon.equalsIgnoreCase("clear-day")) {
-            iconId = R.drawable.clear_day;
-        } else if(mIcon.equalsIgnoreCase("clear-night")) {
-            iconId = R.drawable.clear_night;
-        } else if(mIcon.equalsIgnoreCase("rain")) {
-            iconId = R.drawable.rain;
-        } else if(mIcon.equalsIgnoreCase("snow")) {
-            iconId = R.drawable.snow;
-        } else if(mIcon.equalsIgnoreCase("sleet")) {
-            iconId = R.drawable.sleet;
-        } else if(mIcon.equalsIgnoreCase("wind")) {
-            iconId = R.drawable.wind;
-        } else if(mIcon.equalsIgnoreCase("fog")) {
-            iconId = R.drawable.fog;
-        } else if(mIcon.equalsIgnoreCase("cloudy")) {
-            iconId = R.drawable.cloudy;
-        } else if(mIcon.equalsIgnoreCase("partly-cloudy-day")) {
-            iconId = R.drawable.partly_cloudy;
-        } else if(mIcon.equalsIgnoreCase("partly-cloudy-night")) {
-            iconId = R.drawable.cloudy_night;
-        }
-        return iconId;
+        return Vanilai.getIconId(mIcon);
     }
 
     public long getTime() {

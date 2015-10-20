@@ -34,4 +34,9 @@
     <string name="default_place_text">Place</string>
     <string name="current_earthquake_magnitude">%1$s</string>
     <string name="default_earthquake_text">Found 0 Earthquakes in Area in the last 2hrs!</string>
+    <string name="hourly_button_label">HOURLY</string>
+    <string name="daily_button_label">7 DAY</string>
+    <string name="no_daily_data">There is no data to display.</string>
+    <string name="default_week_label">This Week\'s Weather</string>
+    <string name="image_content_description">Icon Image</string>
 </resources>

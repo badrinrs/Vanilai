@@ -1,4 +1,4 @@
-package me.madri.vanilai;
+package me.madri.vanilai.location;
 
 import android.Manifest;
 import android.app.Activity;

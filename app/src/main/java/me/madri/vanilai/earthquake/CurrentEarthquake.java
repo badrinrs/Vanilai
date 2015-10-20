@@ -1,4 +1,4 @@
-package me.madri.vanilai;
+package me.madri.vanilai.earthquake;
 
 /**
  * This class is a bean class for Current Earthquake values.

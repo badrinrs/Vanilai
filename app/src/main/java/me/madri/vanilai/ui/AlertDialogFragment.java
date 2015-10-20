@@ -1,10 +1,12 @@
-package me.madri.vanilai;
+package me.madri.vanilai.ui;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.os.Bundle;
+
+import me.madri.vanilai.R;
 
 /**
  * This is an alert dialog fragment which is shown when the app is not loaded.

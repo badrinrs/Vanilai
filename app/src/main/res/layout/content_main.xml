@@ -1,28 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/ScrollView01"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" >
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_main"
     tools:context=".MainActivity"
-    android:background="#fc970b">
+    android:background="@drawable/bg_gradient">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/temperature_label_default"
         android:id="@+id/temperatureLabel"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
         android:textColor="@android:color/white"
-        android:textSize="150sp"/>
+        android:textSize="150sp"
+        android:layout_below="@+id/timeLabel"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"/>
 
     <ImageView
         android:layout_width="wrap_content"
@@ -32,28 +36,29 @@
         android:contentDescription="@string/degree_img_content_description"
         android:layout_alignTop="@+id/temperatureLabel"
         android:layout_toEndOf="@+id/temperatureLabel"
-        android:layout_marginTop="50dp"/>
+        android:layout_marginTop="30dp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/time_label_default"
         android:id="@+id/timeLabel"
-        android:layout_above="@+id/temperatureLabel"
         android:layout_centerHorizontal="true"
         android:textColor="#80ffffff"
-        android:textSize="18sp"/>
+        android:textSize="18sp"
+        android:layout_below="@+id/locationLabel"
+        android:layout_marginTop="40dp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/default_location"
         android:id="@+id/locationLabel"
-        android:layout_above="@+id/timeLabel"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="60dp"
         android:textColor="@android:color/white"
-        android:textSize="24sp"/>
+        android:textSize="24sp"
+        android:layout_below="@+id/refreshImageView"
+        android:layout_marginTop="40dp"/>
 
     <ImageView
         android:layout_width="wrap_content"
@@ -68,7 +73,7 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/temperatureLabel"
+        android:layout_below="@+id/temperatureSwitch"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:baselineAligned="false"
@@ -128,12 +133,12 @@
         android:layout_height="wrap_content"
         android:text="@string/summary_label"
         android:id="@+id/summaryLabel"
-        android:layout_below="@+id/linearLayout"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"
         android:textColor="@android:color/white"
         android:textSize="18sp"
-        android:gravity="center_horizontal"/>
+        android:gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/linearLayout"/>
 
     <ImageView
         android:layout_width="wrap_content"
@@ -157,30 +162,37 @@
         android:text="@string/default_earthquake_summary"
         android:id="@+id/earthquakeSummaryLabel"
         android:layout_below="@+id/summaryLabel"
-        android:layout_centerHorizontal="true"
         android:textSize="18sp"
         android:textColor="@android:color/white"
-        android:textIsSelectable="false"/>
+        android:textIsSelectable="false"
+        android:layout_alignParentEnd="false"
+        android:layout_marginTop="10dp"
+        android:layout_centerHorizontal="true"
+        android:textAlignment="center"/>
 
     <Switch
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/temperature_switch_text"
         android:id="@+id/temperatureSwitch"
-        android:layout_alignBottom="@+id/temperatureLabel"
         android:layout_centerHorizontal="true"
         android:textSize="18sp"
-        android:textColor="@android:color/white"/>
+        android:textColor="@android:color/white"
+        android:layout_marginTop="40dp"
+        android:layout_below="@+id/temperatureLabel"/>
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/earthquakeSummaryLabel"
-        android:layout_centerHorizontal="true"
+        android:layout_height="wrap_content"
         android:weightSum="100"
-        android:layout_alignParentBottom="true"
-        android:baselineAligned="false">
+        android:layout_alignParentBottom="false"
+        android:baselineAligned="false"
+        android:layout_below="@+id/earthquakeSummaryLabel"
+        android:layout_alignParentTop="false"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:id="@+id/eathquakeDetails">
 
         <LinearLayout
             android:orientation="vertical"
@@ -232,4 +244,41 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/eathquakeDetails"
+        >
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/hourly_button_label"
+            android:id="@+id/hourlyButton"
+            android:layout_weight="1"
+            android:background="#40ffffff"
+            android:textSize="18sp"
+            android:textColor="#ffffff"
+            android:onClick="onClickHourlyButton"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/daily_button_label"
+            android:id="@+id/dailyButton"
+            android:layout_weight="1"
+            android:background="#40ffffff"
+            android:textSize="18sp"
+            android:textColor="#ffffff"
+            android:layout_marginLeft="5dp"
+            android:nestedScrollingEnabled="false"
+            android:onClick="onClickDailyButton"/>
+
+    </LinearLayout>
+
 </RelativeLayout>
+</ScrollView>
